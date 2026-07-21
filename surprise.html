@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จดหมายพิเศษถึงคุณ ❤️</title>
+    <style>
+        /* CSS หลัก : เปลี่ยนพื้นหลังเป็นชมพู-ขาว ละมุนๆ */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* พื้นหลังไล่สีจากชมพูพาสเทลไปขาวนวล */
+            background: linear-gradient(135deg, #ffe6f2 0%, #ffffff 50%, #ffcce6 100%);
+            font-family: 'Prompt', sans-serif;
+            color: #b30059; /* เปลี่ยนสีตัวอักษรหลักเป็นชมพูเข้มเพื่อให้อ่านง่าย */
+            user-select: none;
+        }
+
+        /* ------------------------------------------- */
+        /* ระบบเอฟเฟกต์ลอยตลอดเวลา (Floating Particles) */
+        /* ------------------------------------------- */
+        #particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            bottom: -50px;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* ------------------------------------------- */
+        /* ส่วนซองจดหมายหน้าแรก (Intro Envelope) */
+        /* ------------------------------------------- */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* พื้นหลังหน้าแรกไล่เฉดชมพูหวานฉ่ำ */
+            background: radial-gradient(circle at center, #ffffff 0%, #ffb3d9 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 1.2s ease-out, visibility 1.2s;
+        }
+
+        .intro-text {
+            font-size: 1.8rem;
+            color: #d6006f;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulseText 2s infinite alternate, floatText 3s ease-in-out infinite;
+        }
+
+        .sub-text {
+            font-size: 1rem;
+            color: #800040;
+            margin-top: 40px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            animation: fadeIn 2s infinite alternate;
+        }
+
+        /* ตัวซองจดหมาย */
+        .envelope-wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            animation: floatEnvelope 3s ease-in-out infinite;
+            filter: drop-shadow(0 15px 25px rgba(255, 51, 153, 0.3));
+            transition: transform 0.3s;
+            z-index: 10;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 20px 30px rgba(255, 51, 153, 0.5));
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff4d94, #ff80b3);
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 270px;
+            height: 170px;
+            background: #ffffff;
+            border-radius: 8px;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.8s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        .letter-content {
+            color: #d6006f;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            border: 2px dashed #ff99cc;
+            padding: 20px;
+            width: 80%;
+            height: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            background-color: #fff9fc;
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 150px 130px 150px;
+            border-color: transparent transparent #ff1a75 transparent;
+            z-index: 3;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .envelope-pocket::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 100px 150px 100px 150px;
+            border-color: transparent #ff3385 #ff0066 #ff3385;
+            z-index: 3;
+            border-radius: 10px;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 110px 150px 0 150px;
+            border-color: #ff66a3 transparent transparent transparent;
+            z-index: 4;
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out, z-index 0.6s;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .heart-seal {
+            position: absolute;
+            top: 85px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.2rem;
+            z-index: 5;
+            transition: opacity 0.4s;
+            filter: drop-shadow(0 2px 5px rgb(240, 238, 238));
+        }
+
+        /* เอฟเฟคตอนเปิดซอง */
+        .open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .open .heart-seal {
+            opacity: 0;
+            transform: translateX(-50%) scale(0);
+        }
+
+        .open .letter {
+            transform: translateY(-80px) scale(1.05);
+            z-index: 3;
+        }
+
+        /* ------------------------------------------- */
+        /* แกลเลอรี่รูปภาพ */
+        /* ------------------------------------------- */
+        .scene-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 10;
+        }
+
+        .active-scene {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            z-index: 20;
+        }
+
+        .scene-image {
+            max-width: 80%;
+            max-height: 55vh;
+            border-radius: 20px;
+            /* กรอบรูปสีขาวหนาขึ้น ให้ความรู้สึกเหมือนรูปโพลารอยด์ */
+            box-shadow: 0 15px 35px rgba(255, 102, 178, 0.3);
+            border: 8px solid #ffffff;
+            object-fit: cover;
+            margin-bottom: 30px;
+            animation: floatImage 4s ease-in-out infinite;
+        }
+
+        .scene-text {
+            font-size: 1.8rem;
+            text-align: center;
+            line-height: 1.6;
+            color: #99004d;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+            margin: 0 20px;
+            font-weight: bold;
+            animation: floatText 3.5s ease-in-out infinite alternate;
+        }
+
+        .nav-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffffff;
+            /* เปลี่ยนปุ่มเป็นสีชมพูเข้ม ไล่เฉดไปชมพูสด */
+            background: linear-gradient(90deg, #ff0066, #ff4d94);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 0, 102, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 30;
+            animation: pulseBtn 2s infinite;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(255, 0, 102, 0.5);
+            animation: none;
+        }
+
+        /* Animations */
+        @keyframes floatEnvelope {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes floatImage {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(0.5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes floatText {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-6px); }
+        }
+
+        @keyframes pulseText {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 20px #ffffff; }
+        }
+
+        @keyframes pulseBtn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); box-shadow: 0 0 25px rgba(255, 0, 102, 0.5); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- พื้นหลังเอฟเฟกต์ลอยตลอดเวลา -->
+    <div id="particles-container"></div>
+
+    <!-- ส่วนที่ 1: หน้าเปิดตัว (ซองจดหมาย 3D) -->
+    <div id="intro-overlay">
+        <div class="intro-text">✨ มีจดหมายพิเศษส่งถึงคุณ... ✨</div>
+        
+        <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+            <div class="envelope-back"></div>
+            <div class="letter">
+                <div class="letter-content">ถึง... เมียรัก ❤️</div>
+            </div>
+            <div class="envelope-pocket"></div>
+            <div class="envelope-flap"></div>
+            <div class="heart-seal">❤️</div>
+        </div>
+
+        <div class="sub-text">( แตะที่ซองจดหมายเพื่อเปิดอ่าน )</div>
+    </div>
+
+    <!-- ส่วนที่ 2: แกลเลอรี่รูปภาพ -->
+    <div id="scene-1" class="scene-container">
+        <img src="https://via.placeholder.com/600x400.png?text=ใส่รูปคู่หรือรูปภรรยารูปแรกที่นี่" class="scene-image" alt="รูปคู่ 1">
+    
+        <div class="scene-text">รักที่สุดขอบคุณที่อยู่ด้วย นะจ๊ะ</div>
+        <button class="nav-btn" onclick="nextScene(1)">กดต่อไปนะจ๊ะ</button>
+    </div>
+
+    <div id="scene-2" class="scene-container">
+        <img src="https://via.placeholder.com/600x400.png?text=ใส่รูปความทรงจำรูปที่สอง" class="scene-image" alt="รูปคู่ 2">
+        <div class="scene-text">ทุกเวลาที่ผ่านมา<br>ขอบคุณที่เป็นกำลังใจทุกอย่าง นะจ๊ะ</div>
+        <button class="nav-btn" onclick="nextScene(2)">กดต่อเลยนะจ๊ะ</button>
+    </div>
+
+    <div id="scene-3" class="scene-container">
+        <img src="https://via.placeholder.com/600x400.png?text=ใส่รูปเซอร์ไพรส์หรือรูปคุณถือดอกไม้" class="scene-image" alt="รูปเซอร์ไพรส์">
+        <div class="scene-text" style="font-size: 2.5rem; font-weight: bold; color: #ff0066; text-shadow: 0 0 20px #ffffff;">รักมากๆ ที่ผ่านมาครบรอบไม่มีอะไรให้! ❤️</div>
+        <div class="scene-text" style="margin-top: 10px; color: #b30059;">รักเมียที่สุดจ่ะะะะะะะ</div>
+    </div>
+
+    <script>
+        // ระบบสร้างเอฟเฟกต์ลอยอัตโนมัติ (Particles)
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 30; // เพิ่มจำนวนให้ดูวิบวับขึ้น
+            const symbols = ['❤️', '✨', '💖', '🌸', '🤍', '⭐']; // เพิ่มหัวใจสีขาว (🤍) เข้าไปให้เข้ากับธีม
+
+            for (let i = 0; i < particleCount; i++) {
+                let particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                particle.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                particle.style.left = Math.random() * 100 + 'vw';
+                
+                let size = Math.random() * 1.5 + 0.5;
+                particle.style.fontSize = size + 'rem';
+                
+                let duration = Math.random() * 7 + 5;
+                particle.style.animationDuration = duration + 's';
+                particle.style.animationDelay = (Math.random() * 5) + 's';
+                
+                // ถ้าเป็นจุดเล็กๆ ปรับให้เป็นสีชมพูหวานๆ
+                if(particle.innerText === '•') {
+                    particle.style.color = '#ff99cc';
+                    particle.style.textShadow = '0 0 10px #ff99cc';
+                    particle.style.fontSize = '2rem';
+                }
+
+                container.appendChild(particle);
+            }
+        }
+
+        window.onload = function() {
+            createParticles();
+        };
+
+        function openEnvelope() {
+            const envelope = document.getElementById('envelope');
+            const introOverlay = document.getElementById('intro-overlay');
+
+            envelope.classList.add('open');
+            envelope.style.animation = 'none';
+
+            setTimeout(() => {
+                introOverlay.style.opacity = '0';
+                
+                setTimeout(() => {
+                    introOverlay.style.display = 'none';
+                    document.getElementById('scene-1').classList.add('active-scene');
+                }, 1000);
+
+            }, 1500);
+        }
+
+        function nextScene(currentSceneId) {
+            const currentScene = document.getElementById('scene-' + currentSceneId);
+            const nextSceneId = currentSceneId + 1;
+            const nextScene = document.getElementById('scene-' + nextSceneId);
+
+            if (nextScene) {
+                currentScene.classList.remove('active-scene');
+                currentScene.style.transform = 'translateY(-50px) scale(1.1)';
+
+                setTimeout(() => {
+                    nextScene.classList.add('active-scene');
+                }, 400);
+            }
+        }
+    </script>
+</body>
+</html>
